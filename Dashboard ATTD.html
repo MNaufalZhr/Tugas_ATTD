@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="id"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SEM-ITS Dashboard</title>
+<style>
+:root{--navy:#363C54;--navy2:#2B3046;--blue:#5271FF;--blue2:#8EA2FF;--light:#EEF1FF;--ink:#1E2233;--grey:#6B7089;--line:#E3E7F5;--warn:#F2994A;--red:#D61F26}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;background:#F5F7FD;color:var(--ink);font-size:13px;min-height:100vh;display:flex}
+.side{width:250px;flex:none;background:var(--navy);color:#fff;padding:26px 18px;display:flex;flex-direction:column;gap:14px}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.logo .mk{width:38px;height:38px;border-radius:10px;background:var(--blue);display:grid;place-items:center;font-weight:800}
+.logo b{font-size:17px;letter-spacing:.5px}.logo small{display:block;color:#AEB6D8;font-size:11px}
+.side label{font-size:11px;color:#AEB6D8;text-transform:uppercase;letter-spacing:.6px}
+.side select{width:100%;margin-top:6px;padding:9px 8px;font-size:12.5px !important;border-radius:8px;border:0;background:var(--navy2);color:#fff;font:inherit}
+.btn{display:block;width:100%;border:0;cursor:pointer;font:inherit;text-align:center;padding:10px;border-radius:8px;background:var(--blue);color:#fff;text-decoration:none;font-weight:600}
+.dev{margin-top:auto;background:var(--navy2);border-radius:10px;padding:14px;font-size:12px;color:#C9D0EE;line-height:1.6}
+.dev b{color:#fff}.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;background:#9AA0B8}
+.dot.on{background:#3DDC84}.dot.off{background:#FF6B6B}
+main{flex:1;min-width:0;padding:22px 26px;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-size:24px;font-weight:800;letter-spacing:-.2px}
+.sub{color:var(--grey);margin-top:4px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--grey)}
+.chip b{color:var(--ink)}
+.alert{background:#FFF4EA;border:1px solid #F8D3B0;border-radius:10px;padding:11px 16px;display:flex;gap:12px;align-items:center}
+.alert .ic{width:26px;height:26px;border-radius:50%;background:var(--warn);color:#fff;display:grid;place-items:center;font-weight:800;flex:none}
+.alert small{color:#9A5B20;display:block}
+.alert.err{background:#FDECEC;border-color:#F5B5B5}.alert.err .ic{background:var(--red)}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.k .lab{color:var(--grey);font-size:12px;display:flex;justify-content:space-between;align-items:center}
+.k .val{font-size:34px;font-weight:800;margin-top:6px;letter-spacing:-.5px}
+.k .val span{font-size:14px;font-weight:600;color:var(--grey);margin-left:4px}
+.k .foot{font-size:11.5px;color:var(--grey);margin-top:6px}
+.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.t-ok{background:#E3F6EA;color:#1E8449}.t-mid{background:#FFF0D9;color:#B4630E}.t-hi{background:#FDE2E2;color:#B3261E}.t-info{background:var(--light);color:var(--blue)}
+.k.hero{background:var(--navy);color:#fff;border-color:var(--navy)}.k.hero .lab,.k.hero .foot,.k.hero .val span{color:#C9D0EE}
+.grid2{display:grid;grid-template-columns:1.75fr 1fr;gap:14px}
+.ct{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px;flex-wrap:wrap}
+.ct h3{font-size:15px}.ct .lg{display:flex;gap:14px;font-size:11.5px;color:var(--grey);flex-wrap:wrap}
+.sw{display:inline-block;width:12px;height:3px;vertical-align:middle;margin-right:5px;border-radius:2px}
+.sw.dash{height:0;border-radius:0;background:none !important;border-top:2.5px dashed currentColor;width:18px}
+.sw.dot{width:9px;height:9px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px #F2994A}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.keys div{font-size:11.5px;color:var(--grey);line-height:1.45}
+.keys b{display:block;color:var(--ink);font-size:12px;margin-bottom:2px}
+.keys .sw{margin-right:6px}
+@media (max-width:720px){.keys{grid-template-columns:1fr}}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{text-align:left;color:var(--grey);font-weight:600;font-size:11.5px;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.n{font-variant-numeric:tabular-nums}
+.bar{height:6px;border-radius:4px;background:var(--light);overflow:hidden;width:80px;display:inline-block;vertical-align:middle;margin-right:6px}
+.bar i{display:block;height:100%;background:var(--blue)}
+.q{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.q div{background:var(--light);border-radius:10px;padding:12px}
+.q b{font-size:22px;color:var(--blue);display:block}
+.q small{color:var(--grey);font-size:11.5px}
+.note{font-size:11px;color:var(--grey);margin-top:10px;line-height:1.5}
+.empty{color:var(--grey);padding:30px;text-align:center}
+svg text{font-family:inherit}
+@media (max-width:1100px){.kpis{grid-template-columns:repeat(2,1fr)}.grid2{grid-template-columns:1fr}}
+@media (max-width:720px){body{flex-direction:column}.side{width:auto}.dev{margin-top:0}main{padding:16px}.kpis{grid-template-columns:1fr}}
+</style>
+<script>
+// ================== PENGATURAN SUPABASE ==================
+// SUPABASE_KEY: Supabase -> Connect / Project Settings -> API Keys
+// pakai "anon" atau "publishable" key (BUKAN service_role / secret)
+window.SEMITS_CONFIG = {
+  SUPABASE_URL: "https://jwvnwccowmlzefiaatqf.supabase.co",
+  SUPABASE_KEY: "sb_publishable_HiR4CgIe9c3YT7wX3DoK9A_Ct3IwXbn",
+};
+// =========================================================
+</script>
+</head><body>
+<aside class="side">
+  <div class="logo"><div class="mk">S</div><div><b>SEM-ITS</b><small>Smart Environmental Monitoring</small></div></div>
+  <div><label for="loc">Lokasi</label><select id="loc"></select></div>
+  <div><label for="hrs">Rentang grafik</label>
+    <select id="hrs"><option value="1">1 jam</option><option value="6" selected>6 jam</option><option value="24">24 jam</option><option value="72">3 hari</option></select></div>
+  <button class="btn" id="csv" type="button">Ekspor CSV</button>
+  <div class="dev"><div style="font-size:10.5px;letter-spacing:.6px;text-transform:uppercase;color:#AEB6D8;margin-bottom:6px">Lokasi dipilih</div><div id="dev">Memuat status perangkat…</div></div>
+</aside>
+<main>
+  <div class="top">
+    <div><h1>Dashboard Kualitas Udara Kampus ITS</h1>
+      <div class="sub">Pemantauan PM2.5, PM10, suhu, dan kelembapan · titik luar ruangan ITS Sukolilo</div></div>
+    <div class="chips">
+      <div class="chip">Lokasi: <b id="cLoc">–</b></div>
+      <div class="chip">Pengukuran terakhir: <b id="cTime">–</b></div>
+      <div class="chip">Rentang: <b id="cHrs">–</b></div>
+    </div>
+  </div>
+
+  <div id="alert"></div>
+
+  <div class="kpis">
+    <div class="card k hero"><div class="lab">PM2.5 <span id="tag25"></span></div>
+      <div class="val"><b id="v25">–</b><span>µg/m³</span></div><div class="foot" id="f25">&nbsp;</div></div>
+    <div class="card k"><div class="lab">PM10 <span id="tag10"></span></div>
+      <div class="val"><b id="v10">–</b><span>µg/m³</span></div><div class="foot" id="f10">&nbsp;</div></div>
+    <div class="card k"><div class="lab">Suhu <span class="tag t-info">BME280</span></div>
+      <div class="val"><b id="vT">–</b><span>°C</span></div><div class="foot" id="fT">&nbsp;</div></div>
+    <div class="card k"><div class="lab">Kelembapan <span class="tag t-info">BME280</span></div>
+      <div class="val"><b id="vH">–</b><span>%RH</span></div><div class="foot" id="fH">&nbsp;</div></div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="ct"><h3 id="tsTitle">Grafik deret waktu</h3>
+        <div class="lg"><span><i class="sw" style="background:#5271FF"></i>PM2.5</span><span><i class="sw" style="background:#363C54"></i>PM10</span></div></div>
+      <svg id="ts" width="100%" height="250" viewBox="0 0 860 250" role="img" aria-label="Grafik PM2.5 dan PM10"></svg>
+      <div class="keys">
+        <div><b><i class="sw dash" style="color:#8EA2FF"></i>Rata-rata bergerak PM2.5</b>Rata-rata 30 menit terakhir; menunjukkan tren tanpa naik-turun sesaat.</div>
+        <div><b><i class="sw dash" style="color:#D61F26"></i>Acuan baku mutu PM2.5</b>55 µg/m³ rata-rata 24 jam (PP 22/2021); hanya pembanding.</div>
+        <div><b><i class="sw dot" style="background:#F2994A"></i>Lonjakan indikatif</b>PM2.5 &gt; 2× rata-rata bergerak dan naik ≥ 15 µg/m³.</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ct"><h3>Perbandingan antartitik</h3><div class="lg">rata-rata sesi ukur terakhir</div></div>
+      <svg id="bars" width="100%" height="250" viewBox="0 0 470 250" role="img" aria-label="Perbandingan antartitik"></svg>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="ct"><h3>Ringkasan titik pengukuran</h3><div class="lg">satu node portabel · dipakai bergantian</div></div>
+      <div class="tbl"><table><thead><tr><th>Titik</th><th>Sesi ukur</th><th>PM2.5</th><th>PM10</th><th>Suhu</th><th>RH</th><th>Kelengkapan data</th><th>Status</th></tr></thead>
+      <tbody id="tbody"></tbody></table></div>
+    </div>
+    <div class="card">
+      <div class="ct"><h3>Kualitas data &amp; kinerja</h3><div class="lg">24 jam terakhir</div></div>
+      <div class="q">
+        <div><b id="qRep">–</b><small>Laporan diterima server</small></div>
+        <div><b id="qComp">–</b><small>Kelengkapan sampel sensor</small></div>
+        <div><b id="qLat">–</b><small>Jeda pengukuran → server</small></div>
+        <div><b id="qInv">–</b><small>Pembacaan tidak valid (dibuang)</small></div>
+      </div>
+      <div class="note">Nilai dari sensor berbiaya rendah bersifat indikatif hingga proses verifikasi dengan instrumen acuan selesai.
+        Garis acuan 55 µg/m³ adalah baku mutu PM2.5 rata-rata 24 jam (PP No. 22 Tahun 2021), bukan batas untuk pembacaan sesaat.</div>
+    </div>
+  </div>
+</main>
+<script>
+const NS = "http://www.w3.org/2000/svg";
+const $ = id => document.getElementById(id);
+const fmt = (v, d = 1) => v == null ? "–" : Number(v).toFixed(d).replace(".", ",");
+// Nama tampilan titik pengukuran (kode lokasi dari ESP32 -> nama lengkap)
+const LOCATION_NAMES = {
+  GERBANG_BUNDARAN_ITS: "Gerbang Utama Bundaran ITS",
+  GERBANG_KEPUTIH:      "Gerbang Belakang Keputih",
+  GERBANG_PPNS:         "Gerbang Daerah PPNS",
+};
+const nice = s => LOCATION_NAMES[s] || (s || "").replace(/_/g, " ").toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+const MON = ["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+const parse = s => new Date(s.replace(" ", "T"));
+const hm = s => s ? s.slice(11, 16) : "–";
+const dmy = s => { const d = parse(s); return d.getDate() + " " + MON[d.getMonth()]; };
+function el(p, t, a, txt) { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; p.appendChild(e); return e; }
+
+let state = { location: null, hours: 6 };
+try { const s = JSON.parse(localStorage.getItem("semits") || "{}"); if (s.hours) state.hours = s.hours; if (s.location) state.location = s.location; } catch (e) {}
+$("hrs").value = state.hours;
+
+function pctTag(v, ref) {
+  if (v == null) return "";
+  const p = v / ref * 100;
+  const cls = p >= 100 ? "t-hi" : p >= 60 ? "t-mid" : "t-ok";
+  return `<span class="tag ${cls}">${Math.round(p)}% dari acuan</span>`;
+}
+
+function drawSeries(d) {
+  const svg = $("ts"); svg.innerHTML = "";
+  const s = d.series;
+  if (!s.length) { el(svg, "text", { x: 430, y: 125, "text-anchor": "middle", fill: "#6B7089", "font-size": 13 }, "Belum ada data untuk lokasi ini"); return; }
+  const L = 44, R = 850, T = 14, B = 222;
+  const t0 = parse(s[0].t).getTime(), t1 = Math.max(parse(s[s.length - 1].t).getTime(), t0 + 60000);
+  const raw = Math.max(d.ref.pm2_5 + 10, ...s.map(r => Math.max(r.pm2_5 || 0, r.pm10 || 0)));
+  const step = [10, 20, 25, 50, 100, 200, 250].find(x => raw / x <= 5) || 500;
+  const ymax = Math.ceil(raw / step) * step;
+  const X = t => L + (R - L) * (t - t0) / (t1 - t0), Y = v => B - (B - T) * v / ymax;
+  for (let v = 0; v <= ymax; v += step) {
+    el(svg, "line", { x1: L, x2: R, y1: Y(v), y2: Y(v), stroke: "#E3E7F5" });
+    el(svg, "text", { x: L - 8, y: Y(v) + 4, "text-anchor": "end", "font-size": 11, fill: "#6B7089" }, Math.round(v));
+  }
+  for (let k = 0; k <= 6; k++) {
+    const t = t0 + (t1 - t0) * k / 6, dt = new Date(t);
+    el(svg, "text", { x: X(t), y: B + 18, "text-anchor": k === 0 ? "start" : k === 6 ? "end" : "middle", "font-size": 11, fill: "#6B7089" },
+       String(dt.getHours()).padStart(2, "0") + ":" + String(dt.getMinutes()).padStart(2, "0"));
+  }
+  // area lonjakan
+  s.forEach(r => { if (r.spike) { const x = X(parse(r.t).getTime()); el(svg, "rect", { x: x - 6, y: T, width: 12, height: B - T, fill: "#F2994A", opacity: .15 }); } });
+  el(svg, "line", { x1: L, x2: R, y1: Y(d.ref.pm2_5), y2: Y(d.ref.pm2_5), stroke: "#D61F26", "stroke-dasharray": "5 5", "stroke-width": 1.2 });
+  const line = (key, c, w, dash) => {
+    let path = "", pen = false, prev = null;
+    s.forEach(r => {
+      const t = parse(r.t).getTime();
+      if (r[key] == null || (prev && t - prev > 10 * 60000)) pen = false;   // putus bila data kosong/jeda > 10 menit
+      if (r[key] != null) { path += (pen ? "L" : "M") + X(t).toFixed(1) + " " + Y(r[key]).toFixed(1); pen = true; }
+      prev = t;
+    });
+    el(svg, "path", { d: path, fill: "none", stroke: c, "stroke-width": w, "stroke-linejoin": "round", "stroke-dasharray": dash || "" });
+  };
+  line("pm10", "#363C54", 1.8); line("ma", "#8EA2FF", 2, "6 4"); line("pm2_5", "#5271FF", 2.2);
+  s.forEach(r => { if (r.spike && r.pm2_5 != null) el(svg, "circle", { cx: X(parse(r.t).getTime()), cy: Y(r.pm2_5), r: 5, fill: "#F2994A", stroke: "#fff", "stroke-width": 2 }); });
+  el(svg, "text", { x: L + 4, y: T + 10, "font-size": 10.5, fill: "#6B7089", stroke: "#fff", "stroke-width": 4, "paint-order": "stroke" }, "µg/m³");
+}
+
+function drawBars(d) {
+  const svg = $("bars"); svg.innerHTML = "";
+  const data = d.compare.slice(0, 5);
+  if (!data.length) { el(svg, "text", { x: 235, y: 125, "text-anchor": "middle", fill: "#6B7089", "font-size": 13 }, "Belum ada data"); return; }
+  const bx0 = 150, bx1 = 430;
+  let bmax = Math.ceil(Math.max(20, ...data.map(r => Math.max(r.pm2_5 || 0, r.pm10 || 0))) / 20) * 20;
+  const BX = v => bx0 + (bx1 - bx0) * v / bmax;
+  for (let v = 0; v <= bmax; v += bmax / 4) {
+    el(svg, "line", { x1: BX(v), x2: BX(v), y1: 6, y2: 212, stroke: "#E3E7F5" });
+    el(svg, "text", { x: BX(v), y: 228, "text-anchor": "middle", "font-size": 11, fill: "#6B7089" }, Math.round(v));
+  }
+  const gap = Math.min(50, 205 / data.length);
+  data.forEach((r, k) => {
+    const y = 12 + k * gap, sel = r.location === d.location;
+    // nama panjang dipecah jadi 2 baris
+    const words = nice(r.location).split(" "), lines = [""];
+    words.forEach(w => { if ((lines[lines.length - 1] + " " + w).trim().length > 16 && lines.length < 2) lines.push(w); else lines[lines.length - 1] = (lines[lines.length - 1] + " " + w).trim(); });
+    lines.forEach((ln, j) => el(svg, "text", { x: bx0 - 10, y: y + (lines.length === 1 ? 19 : 12 + j * 14), "text-anchor": "end", "font-size": 11.5, fill: "#1E2233", "font-weight": sel ? 800 : 600 }, ln));
+    [[r.pm2_5, "#5271FF", 0], [r.pm10, "#363C54", 18]].forEach(([v, c, off]) => {
+      if (v == null) return;
+      el(svg, "rect", { x: bx0, y: y + off, width: Math.max(1, BX(v) - bx0), height: 15, rx: 3, fill: c });
+      el(svg, "text", { x: BX(v) + 6, y: y + off + 12, "font-size": 11, fill: "#1E2233" }, fmt(v));
+    });
+  });
+  el(svg, "rect", { x: bx0, y: 236, width: 10, height: 10, fill: "#5271FF", rx: 2 }); el(svg, "text", { x: bx0 + 15, y: 245, "font-size": 11, fill: "#6B7089" }, "PM2.5");
+  el(svg, "rect", { x: bx0 + 70, y: 236, width: 10, height: 10, fill: "#363C54", rx: 2 }); el(svg, "text", { x: bx0 + 85, y: 245, "font-size": 11, fill: "#6B7089" }, "PM10 (µg/m³)");
+}
+
+function render(d) {
+  // pilihan lokasi
+  const sel = $("loc"), cur = d.location;
+  sel.innerHTML = d.locations.map(l => `<option value="${l}" ${l === cur ? "selected" : ""}>${nice(l)}</option>`).join("") || "<option>Belum ada data</option>";
+  state.location = cur;
+
+  // perangkat
+  const dv = d.device;
+  const cs = d.current;
+  const here = dv && cur && dv.location === cur;   // alat sedang berada di lokasi yang dipilih?
+  $("dev").innerHTML = dv ? `<b>${cur ? nice(cur) : "–"}</b><br>
+      Pengukuran terakhir: ${cs ? hm(cs.ts) + " WIB · " + dmy(cs.ts) : "–"}<br>
+      <span class="dot ${here && dv.online ? "on" : "off"}"></span>${here ? (dv.online ? "Alat sedang mengukur di sini" : "Alat offline") : "Alat tidak berada di sini"}<br>
+      <span style="opacity:.75">Node ${dv.device_id} · Wi-Fi ${dv.rssi ?? "–"} dBm · fw ${dv.fw ?? "–"}${dv.buffered ? " · buffer " + dv.buffered : ""}</span>`
+    : `<span class="dot"></span>Belum ada data dari perangkat`;
+
+  const c = d.current, st = d.stats_1h;
+  $("cLoc").textContent = cur ? nice(cur) : "–";
+  $("cTime").textContent = c ? `${c.ts.slice(11, 19)} WIB · ${dmy(c.ts)}` : "–";
+  $("cHrs").textContent = d.hours >= 24 && d.hours % 24 === 0 ? (d.hours / 24) + " hari" : d.hours + " jam";
+  $("tsTitle").textContent = "Grafik deret waktu · " + (cur ? nice(cur) : "–");
+
+  $("v25").textContent = fmt(c?.pm2_5); $("v10").textContent = fmt(c?.pm10);
+  $("vT").textContent = fmt(c?.temperature); $("vH").textContent = fmt(c?.humidity, 0);
+  $("tag25").innerHTML = pctTag(c?.pm2_5, d.ref.pm2_5); $("tag10").innerHTML = pctTag(c?.pm10, d.ref.pm10);
+  $("f25").textContent = st ? `Rata-rata 1 jam: ${fmt(st.pm2_5)} µg/m³` : "";
+  $("f10").textContent = st ? `Rata-rata 1 jam: ${fmt(st.pm10)} µg/m³` : "";
+  $("fT").textContent = st ? `Min ${fmt(st.tmin)} · Maks ${fmt(st.tmax)} (1 jam)` : "";
+  $("fH").textContent = c ? (c.rh_high ? "≥ 85% — periksa potensi bias sensor optik" : "Di bawah 85% — bias sensor optik rendah") : "";
+
+  // peringatan
+  let a = "";
+  if (dv && !dv.online) a = `<div class="alert err"><div class="ic">!</div><div><b>Perangkat offline</b> — tidak ada data baru selama ${Math.round(dv.last_seen_s / 60)} menit.<small>Periksa daya, Wi-Fi, dan alamat server di firmware.</small></div></div>`;
+  else if (d.last_spike) a = `<div class="alert"><div class="ic">!</div><div><b>Lonjakan indikatif terdeteksi pukul ${hm(d.last_spike)} WIB</b> di ${nice(cur)}.<small>Peringatan berbasis pola data sesaat, bukan penilaian pelampauan baku mutu 24 jam (PP No. 22 Tahun 2021).</small></div></div>`;
+  $("alert").innerHTML = a;
+
+  drawSeries(d); drawBars(d);
+
+  $("tbody").innerHTML = d.compare.map(r => {
+    const cls = r.status === "Lonjakan" ? "t-mid" : r.status === "Cek RH" ? "t-info" : "t-ok";
+    const sameDay = r.start.slice(0, 10) === r.end.slice(0, 10);
+    return `<tr><td><b>${nice(r.location)}</b></td><td>${dmy(r.start)} · ${hm(r.start)}–${sameDay ? "" : dmy(r.end) + " "}${hm(r.end)}</td>
+      <td class="n">${fmt(r.pm2_5)}</td><td class="n">${fmt(r.pm10)}</td><td class="n">${fmt(r.temperature)} °C</td><td class="n">${fmt(r.humidity, 0)}%</td>
+      <td><span class="bar"><i style="width:${r.completeness}%"></i></span>${fmt(r.completeness, 0)}%</td><td><span class="tag ${cls}">${r.status}</span></td></tr>`;
+  }).join("") || `<tr><td colspan="8" class="empty">Belum ada data</td></tr>`;
+
+  const q = d.quality;
+  $("qRep").textContent = q.reports_24h;
+  $("qComp").textContent = q.completeness_pct == null ? "–" : fmt(q.completeness_pct) + "%";
+  $("qLat").textContent = q.latency_s == null ? "–" : fmt(q.latency_s) + " s";
+  $("qInv").textContent = q.invalid_24h;
+}
+
+// ---------- Supabase ----------
+const SB_URL = (window.SEMITS_CONFIG?.SUPABASE_URL || "").replace(/\/$/, "");
+const SB_KEY = window.SEMITS_CONFIG?.SUPABASE_KEY || "";
+function sbHeaders(extra) {
+  const h = { apikey: SB_KEY, "Content-Type": "application/json", ...extra };
+  if (SB_KEY.startsWith("eyJ")) h.Authorization = "Bearer " + SB_KEY;   // anon key lama (JWT)
+  return h;
+}
+async function sbRpc(fn, body) {
+  const r = await fetch(`${SB_URL}/rest/v1/rpc/${fn}`, { method: "POST", headers: sbHeaders(), body: JSON.stringify(body) });
+  if (!r.ok) throw new Error("HTTP " + r.status + " " + (await r.text()).slice(0, 120));
+  return r.json();
+}
+
+async function load() {
+  if (!SB_URL || !SB_KEY || SB_URL.includes("PROJECT-ANDA") || SB_KEY.startsWith("TEMPEL")) {
+    $("alert").innerHTML = `<div class="alert err"><div class="ic">!</div><div><b>Supabase belum diatur</b><small>Isi SUPABASE_KEY di bagian PENGATURAN SUPABASE (bagian atas file HTML ini).</small></div></div>`;
+    return;
+  }
+  try {
+    render(await sbRpc("dashboard_data", { p_location: state.location || null, p_hours: state.hours }));
+  } catch (e) {
+    $("alert").innerHTML = `<div class="alert err"><div class="ic">!</div><div><b>Gagal memuat data dari Supabase</b> (${e.message}).<small>Periksa SUPABASE_URL/KEY di bagian atas file HTML dan pastikan supabase_setup.sql sudah dijalankan.</small></div></div>`;
+  }
+}
+
+// ---------- Ekspor CSV (semua data di lokasi terpilih) ----------
+const wib = iso => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Jakarta", year: "numeric", month: "2-digit", day: "2-digit",
+  hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).format(new Date(iso));
+async function exportCsv() {
+  const btn = $("csv"); btn.textContent = "Menyiapkan…"; btn.disabled = true;
+  const cols = ["ts","location","device_id","pm1_0","pm2_5","pm10","temperature","humidity","pressure_hpa","samples_pm","invalid","ma_pm2_5","spike_pm2_5","spike_pm10","rh_high","received_at"];
+  const head = ["waktu_wib","lokasi","perangkat","pm1_0","pm2_5","pm10","suhu_c","rh_persen","tekanan_hpa","sampel_pm","tidak_valid","rata_bergerak_pm2_5","lonjakan_pm2_5","lonjakan_pm10","rh_tinggi","diterima_wib"];
+  try {
+    const rows = [];
+    for (let off = 0; ; off += 1000) {
+      const q = new URLSearchParams({ select: cols.join(","), order: "ts.asc", limit: 1000, offset: off });
+      if (state.location) q.set("location", "eq." + state.location);
+      const r = await fetch(`${SB_URL}/rest/v1/readings?${q}`, { headers: sbHeaders() });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const part = await r.json(); rows.push(...part);
+      if (part.length < 1000) break;
+    }
+    const esc = v => typeof v === "number" ? String(Math.round(v * 100) / 100) : v == null ? "" : /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : String(v);
+    const lines = [head.join(",")].concat(rows.map(r => cols.map(c => esc(c === "ts" || c === "received_at" ? wib(r[c]) : r[c])).join(",")));
+    const blob = new Blob(["\ufeff" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `semits_${state.location || "semua"}_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click(); URL.revokeObjectURL(a.href);
+  } catch (e) { $("alert").innerHTML = `<div class="alert err"><div class="ic">!</div><div><b>Gagal ekspor CSV</b> (${e.message}).</div></div>`; }
+  btn.textContent = "Ekspor CSV"; btn.disabled = false;
+}
+$("csv").onclick = exportCsv;
+function save() { try { localStorage.setItem("semits", JSON.stringify(state)); } catch (e) {} }
+$("loc").onchange = e => { state.location = e.target.value; save(); load(); };
+$("hrs").onchange = e => { state.hours = +e.target.value; save(); load(); };
+load();
+setInterval(load, 30000);   // segarkan tiap 30 detik
+</script>
+</body></html>
